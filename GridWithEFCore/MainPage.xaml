@@ -1,0 +1,64 @@
+﻿<Page
+    x:Class="GridWithEFCore.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:GridWithEFCore"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:GridWithEFCore.ViewModels"
+    xmlns:cnv="using:GridWithEFCore.Converters"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <vm:MainViewModel x:Key="viewmodel" />
+        <cnv:TimeConverter x:Key="timeCnv" />
+    </Page.Resources>
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="8">
+            <TextBlock Text="SQLite database location" Margin="0 0 0 4" />
+            <TextBox Text="{x:Bind ViewModel.DatabasePath}" IsReadOnly="True" />
+        </StackPanel>
+
+        <ListView ItemsSource="{x:Bind ViewModel.Sessions}" Grid.Row="1" Margin="8">
+            <ListView.Resources>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalAlignment" Value="Stretch" />
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                </Style>
+            </ListView.Resources>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <CalendarDatePicker Width="120" Margin="4 0" Date="{Binding Start,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,Converter={StaticResource timeCnv}}" Grid.Column="0" />
+                        <ComboBox Margin="4 0" VerticalAlignment="Center" HorizontalAlignment="Stretch" ItemsSource="{Binding Categories,Source={StaticResource viewmodel}}" SelectedItem="{Binding Category,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" DisplayMemberPath="Name" Grid.Column="1" />
+                        <TextBox Margin="4 0" VerticalAlignment="Center" Text="{Binding Speaker,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Grid.Column="2" />
+                        <TextBox Margin="4 0" VerticalAlignment="Center" Text="{Binding Title,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Grid.Column="3" />
+                        <Slider Value="{Binding MinutesDuration,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Minimum="0" Maximum="75" Grid.Column="4" />
+                        <Button Content="DEL" Padding="4 0" Command="{Binding DeleteCommand,Source={StaticResource viewmodel}}" CommandParameter="{Binding}" Grid.Column="5" Margin="4 0" />
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="2" Margin="8">
+            <Button Command="{x:Bind ViewModel.AddNewCommand}" Content="Add new session" Margin="8" />
+            <Button Command="{x:Bind ViewModel.SaveCommand}" Content="Save" Margin="0 8 8 8" />
+        </StackPanel>
+
+    </Grid>
+</Page>
